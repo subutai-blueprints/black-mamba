@@ -3,3 +3,4 @@
 # dependencies
 /market-maker/node_modules
 /market-maker-contracts/build
+/market-maker-contracts/build/contracts
