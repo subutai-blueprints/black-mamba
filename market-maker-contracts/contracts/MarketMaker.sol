@@ -1,10 +1,10 @@
 pragma solidity ^0.4.24;
 
 // ----------------------------------------------------------------------------
-// 'KHAN' 'KHAN Token' token contract
+// 'ERC20 token template' token contract
 //
-// Symbol      : KHAN
-// Name        : KHAN Token
+// Symbol      : ****
+// Name        : **** Token
 // Total supply: 1,000,000.000000000000000000
 // Decimals    : 18
 //
@@ -228,37 +228,41 @@ contract MarketMaker
     
     function createKHAN() public {
         KHAN = new Token ("KHAN", "KHAN Token", 18);
-        
+        Token khan = Token(KHAN);
+        khan.transferFrom( address(this), msg.sender, ((1000000 * 10**uint(18)) - (100000 * 10**uint(18))));
     }
     
     function createGW() public{
         GW = new Token ("GW", "Good Will", 18);
+        Token gw = Token(GW);
+        gw.transferFrom(  address(this), msg.sender,((1000000 * 10**uint(18)) - (200000 * 10**uint(18))));
     }
     
-    function exchangeKHANtoGW( uint amount ) public {
+    function exchangeKHANtoGW( uint khanAmount ) public {
         
         Token gw = Token(GW);
         
         Token khan = Token(KHAN);
         
+        uint gwToTransfer = khanAmount * gw.balanceOf(address(this)) / khan.balanceOf(address(this));
         
+        khan.transferFrom(  msg.sender, address(this),  khanAmount );
         
-        gw.transferFrom( address(this), msg.sender, amount );
-        
-        khan.transferFrom(  msg.sender,address(this),  amount );
-        
+        gw.transferFrom( address(this), msg.sender, gwToTransfer );
         
     }
 
-    function exchangeGWtoKHAN( uint amount ) public {
+    function exchangeGWtoKHAN( uint gwAmount ) public {
         
         Token gw = Token(GW);
         
         Token khan = Token(KHAN);
         
-        gw.transferFrom(  msg.sender,address(this),  amount );
+        uint khanToTransfer = gwAmount * khan.balanceOf(address(this)) / gw.balanceOf(address(this)); 
         
-        khan.transferFrom( address(this), msg.sender, amount );
+        gw.transferFrom(  msg.sender,address(this),  gwAmount );
+        
+        khan.transferFrom( address(this), msg.sender, khanToTransfer );
     }
     
     function getMarketMakerAddress () public view returns   (address){
@@ -267,27 +271,12 @@ contract MarketMaker
         
     }
     
-    function transferKHANTo(address to, uint amount ) public {
-        
-        Token khan = Token(KHAN); 
-        
-        khan.transferFrom( address(this), to, amount );
-        
-    }
-    
-    
-    function transferGWTo(address to, uint amount ) public {
-        
+    function getGWAmount() public view returns (uint) {
         Token gw = Token(GW);
-        
-        gw.transferFrom( address(this), to, amount );
+        return gw.balanceOf(address(this)) ;
     }
-    
-    function getKHANCourse() public pure returns (uint) {
-        return 2;
-    }
-    
-    function getGWCourse() public pure returns (uint) {
-        return 1;
+    function getKHANAmount() public view returns (uint) {
+        Token khan = Token(KHAN);
+        return khan.balanceOf(address(this));
     }
 }

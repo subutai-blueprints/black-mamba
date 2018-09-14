@@ -1,0 +1,7 @@
+import  web3 from './web3';
+
+const address = '0x7b9A282F7a423AdD9e0695bA1CF8d28fb025f821';
+
+const abi= [{"constant":false,"inputs":[],"name":"createFRT","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[],"name":"createNFRT","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"FRTAmount","type":"uint256"}],"name":"exchangeFRTtoNFRT","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"NFRTAmount","type":"uint256"}],"name":"exchangeNFRTtoFRT","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"FRT","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getFRTAmount","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getMarketMakerAddress","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getNFRTAmount","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"NFRT","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"}];
+
+export default  new  web3.eth.Contract(abi, address);
