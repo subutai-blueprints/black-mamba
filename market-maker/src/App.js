@@ -3,8 +3,8 @@ import './App.css';
 
 import web3 from './web3';
 import marketMaker from './marletmaker';
-import gw from './gw';
-import khan from './khan';
+// import gw from './gw';
+// import khan from './khan';
 
 
 class App extends Component {
@@ -16,52 +16,60 @@ class App extends Component {
     khanCource: '',
     message: 'test message',
     khan: '',
-    gw: ''
+    gw: '',
+    message: ''
   };
 
   componentDidMount= async (event) => {
 
-    const khanA = await marketMaker.methods.getNFRTAmount().call();
-    const gwA = await marketMaker.methods.getFRTAmount().call();
+    const khanA = await marketMaker.methods.getKHANAmount().call();
+    const gwA = await marketMaker.methods.getGWAmount().call();
 
-    this.setState({khanAmount: web3.utils.fromWei(khanA)});
-    this.setState({gwAmount: web3.utils.fromWei(gwA)});
-    
-    const address =  await marketMaker.methods.getMarketMakerAddress().call();
+    const khanInWei = web3.utils.fromWei(khanA) / 1;
+    const gwInWei = web3.utils.fromWei(gwA) / 1;
 
+    this.setState({khanAmount:  khanInWei.toFixed(5)});
+    this.setState({gwAmount: gwInWei.toFixed(5)});
+  
     const khanBalance = khanA / gwA ;
     const gwBalance = gwA / khanA ;
 
-    this.setState({khanCource:khanBalance });
-    this.setState({gwCource:gwBalance });     
+    this.setState({khanCource:khanBalance.toFixed(5) });
+    this.setState({gwCource:gwBalance.toFixed(5) });     
   }
 
   onExchangeKhantoGw = async (event) => {
-    event.preventDefault();
-    
+   this.setState({message: 'Waiting on transaction success ...'});
+   event.preventDefault();  
    const accounts = await web3.eth.getAccounts();
 
-   // this.setState({message: 'Waiting on transaction success ...'});
-
    try{
-    await marketMaker.methods.exchangeNFRTtoFRT(web3.utils.toWei(this.state.khan, 'ether')).send({
+    await marketMaker.methods.exchangeKHANtoGW(web3.utils.toWei(this.state.khan, 'ether')).send({
       from: accounts[0]
     });
-  }catch (e) {
-    console.log(e);
-  }
 
+    this.setState({message: 'Transaction success!'});
+  }catch (e) {
+    this.setState({message: 'Transaction failed!'});
+  }
   };
 
   onExchangeGWtoKhan = async (event) => {
     event.preventDefault();
     
+    this.setState({message: 'Waiting on transaction success ...'});
+
+    try{
+
     const accounts = await web3.eth.getAccounts();
  
-     await marketMaker.methods.exchangeFRTtoNFRT(web3.utils.toWei(this.state.gw, 'ether')).send({
+     await marketMaker.methods.exchangeGWtoKHAN(web3.utils.toWei(this.state.gw, 'ether')).send({
        from: accounts[0]
      });
-
+     this.setState({message: 'Transaction success!'});
+    }catch(error){
+      this.setState({message: 'Transaction failed!'});
+    }
   };
 
   render() {
@@ -88,11 +96,16 @@ class App extends Component {
         </form>
 
         <p>
-          NFRT Amount { this.state.khanAmount}
+          KHAN Amount { this.state.khanAmount}
           <br/>
-          FRT Amount { this.state.gwAmount}
+          GW Amount { this.state.gwAmount}
 
           </p>
+
+<p>
+{ this.state.message}
+</p>
+
 
     </div>
     );

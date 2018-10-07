@@ -226,16 +226,18 @@ contract MarketMaker
     address public KHAN;
     address public GW;
     
-    function createKHAN() public {
+    event exchange(address indexed from, uint inputToken,uint outputToken, string fromToken, string toToken);
+    
+    constructor () public {
         KHAN = new Token ("KHAN", "KHAN Token", 18);
         Token khan = Token(KHAN);
-        khan.transferFrom( address(this), msg.sender, ((1000000 * 10**uint(18)) - (100000 * 10**uint(18))));
-    }
-    
-    function createGW() public{
+        khan.transferFrom( address(this), 0x45057e3a83e6fab77ef833bf835389af80e632d7, ((1000000 * 10**uint(18)) - (100000 * 10**uint(18))));
+        
+        
         GW = new Token ("GW", "Good Will", 18);
         Token gw = Token(GW);
-        gw.transferFrom(  address(this), msg.sender,((1000000 * 10**uint(18)) - (200000 * 10**uint(18))));
+        gw.transferFrom( address(this), 0x45057e3a83e6fab77ef833bf835389af80e632d7,((1000000 * 10**uint(18)) - (200000 * 10**uint(18))));
+
     }
     
     function exchangeKHANtoGW( uint khanAmount ) public {
@@ -249,10 +251,12 @@ contract MarketMaker
         khan.transferFrom(  msg.sender, address(this),  khanAmount );
         
         gw.transferFrom( address(this), msg.sender, gwToTransfer );
-        
+
+        emit exchange(msg.sender, khanAmount, gwToTransfer, "KHAN", "GW" ); 
     }
 
     function exchangeGWtoKHAN( uint gwAmount ) public {
+        
         
         Token gw = Token(GW);
         
@@ -263,6 +267,8 @@ contract MarketMaker
         gw.transferFrom(  msg.sender,address(this),  gwAmount );
         
         khan.transferFrom( address(this), msg.sender, khanToTransfer );
+
+        emit exchange(msg.sender, gwAmount, khanToTransfer, "GW", "KHAN" );
     }
     
     function getMarketMakerAddress () public view returns   (address){
