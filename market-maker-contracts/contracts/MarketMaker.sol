@@ -231,12 +231,12 @@ contract MarketMaker
     constructor () public {
         KHAN = new Token ("KHAN", "KHAN Token", 18);
         Token khan = Token(KHAN);
-        khan.transferFrom( address(this), 0x45057e3a83e6fab77ef833bf835389af80e632d7, ((1000000 * 10**uint(18)) - (100000 * 10**uint(18))));
+        khan.transferFrom( address(this), 0x2ec5973e8847099e0234a1c567997d8fcdfe545c, ((1000000 * 10**uint(18)) - (100000 * 10**uint(18))));
         
         
         GW = new Token ("GW", "Good Will", 18);
         Token gw = Token(GW);
-        gw.transferFrom( address(this), 0x45057e3a83e6fab77ef833bf835389af80e632d7,((1000000 * 10**uint(18)) - (200000 * 10**uint(18))));
+        gw.transferFrom( address(this), 0x2ec5973e8847099e0234a1c567997d8fcdfe545c,((1000000 * 10**uint(18)) - (200000 * 10**uint(18))));
 
     }
     
