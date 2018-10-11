@@ -8,7 +8,6 @@ import marketMaker from './marletmaker';
 const address = '0xe3ac041517c68ac94f5e0e3ef3c43eb4eb9928db';
 const abi=[{"anonymous":false,"inputs":[{"indexed":true,"name":"from","type":"address"},{"indexed":false,"name":"inputToken","type":"uint256"},{"indexed":false,"name":"outputToken","type":"uint256"},{"indexed":false,"name":"fromToken","type":"string"},{"indexed":false,"name":"toToken","type":"string"}],"name":"exchange","type":"event"},{"constant":false,"inputs":[{"name":"gwAmount","type":"uint256"}],"name":"exchangeGWtoKHAN","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"khanAmount","type":"uint256"}],"name":"exchangeKHANtoGW","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"constant":true,"inputs":[],"name":"getGWAmount","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getKHANAmount","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getMarketMakerAddress","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"GW","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"KHAN","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"}];
 
-
 class App extends Component {
 
   state = {
@@ -26,25 +25,27 @@ class App extends Component {
 
     console.log("click");
 
-    var myweb3 = new Web3( new Web3.providers.WebsocketProvider( 'ws://85.93.89.128:9898' ));
-    var mm = new myweb3.eth.Contract( abi, address );
+    var wsweb3 = new Web3( new Web3.providers.WebsocketProvider( 'ws://85.93.89.128:9898' ));
+    var mm = new wsweb3.eth.Contract( abi, address );
 
-    await mm.events.exchange( async (error, event) => {
-      console.log(event);
-      console.log(error);
-    });
+    mm.getPastEvents(
+      'exchange',
+      {
+        fromBlock: 0,
+        toBlock: 'latest'
+      },
+      (err, events) => { 
+        events.forEach(function(element) {
+          console.log('owner: ' + element.returnValues[0] );
+          console.log('from amount: ' + element.returnValues[1]);
+          console.log('amount to: ' + element.returnValues[2]);
+          console.log('from : ' + element.returnValues[3]);
+          console.log('to : ' + element.returnValues[4]);
 
-    console.log('end');
-
-    // mm.events.exchange({
-    //   fromBlock: 0,
-    //   toBlock: 'latest'
-    // }, async ( err, event ) => {
-
-    //   console.log("00000000000000000000000000000000000000000000");
-    //   console.log(event.returnValues);
-
-    // });
+          console.log(element);
+        });
+       }
+    )
 
   }
 
@@ -109,7 +110,7 @@ class App extends Component {
     <div align='center'>
     <h2> Market Maker</h2>
        <form onSubmit={this.onExchangeKhantoGw}>
-             <hr/>
+     
            <div>
              <label> 1 KHAN to GW  {this.state.gwCource} </label>
               <input
@@ -117,8 +118,10 @@ class App extends Component {
               onChange = {event => this.setState({khan: event.target.value})}/> <button> Exchange </button>
           </div>
           </form>
+
+          <br/>
        <form onSubmit={this.onExchangeGWtoKhan}>
-          <hr/>
+     
            <div>
              <label>1  GW to KHAN {this.state.khanCource} </label>
               <input
@@ -126,12 +129,19 @@ class App extends Component {
           </div>
         </form>
 
+ <br/>
         <p>
-          KHAN Amount { this.state.khanAmount}
+          KHAN Amount <br/> { this.state.khanAmount}
           <br/>
-          GW Amount { this.state.gwAmount}
+          <br/>
+          GW Amount <br/> { this.state.gwAmount}
 
         </p>
+        <hr/>
+        
+        <button onClick={this.onEvent}>
+ Test
+</button>
         <hr/>
 
 <p>
