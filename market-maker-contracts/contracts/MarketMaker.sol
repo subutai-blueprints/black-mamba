@@ -1,225 +1,15 @@
 pragma solidity ^0.4.24;
 
-// ----------------------------------------------------------------------------
-// 'ERC20 token template' token contract
-//
-// Symbol      : ****
-// Name        : **** Token
-// Total supply: 1,000,000.000000000000000000
-// Decimals    : 18
-//
-// Enjoy
-// ----------------------------------------------------------------------------
-
-
-// ----------------------------------------------------------------------------
-// Safe maths
-// ----------------------------------------------------------------------------
-library SafeMath {
-    function add(uint a, uint b) internal pure returns (uint c) {
-        c = a + b;
-        require(c >= a);
-    }
-    function sub(uint a, uint b) internal pure returns (uint c) {
-        require(b <= a);
-        c = a - b;
-    }
-    function mul(uint a, uint b) internal pure returns (uint c) {
-        c = a * b;
-        require(a == 0 || c / a == b);
-    }
-    function div(uint a, uint b) internal pure returns (uint c) {
-        require(b > 0);
-        c = a / b;
-    }
-}
-
-
-// ----------------------------------------------------------------------------
-// ERC Token Standard #20 Interface
-// https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20.md
-// ----------------------------------------------------------------------------
-contract ERC20Interface {
+contract ERC20 {
     function totalSupply() public constant returns (uint);
     function balanceOf(address tokenOwner) public constant returns (uint balance);
     function allowance(address tokenOwner, address spender) public constant returns (uint remaining);
     function transfer(address to, uint tokens) public returns (bool success);
     function approve(address spender, uint tokens) public returns (bool success);
     function transferFrom(address from, address to, uint tokens) public returns (bool success);
-
     event Transfer(address indexed from, address indexed to, uint tokens);
     event Approval(address indexed tokenOwner, address indexed spender, uint tokens);
-    event TransferToSidechain(address indexed from, address indexed to, uint tokens);
 }
-
-
-// ----------------------------------------------------------------------------
-// Contract function to receive approval and execute function in one call
-// ----------------------------------------------------------------------------
-contract ApproveAndCallFallBack {
-    function receiveApproval(address from, uint256 tokens, address token, bytes data) public;
-}
-
-
-// ----------------------------------------------------------------------------
-// Owned contract
-// ----------------------------------------------------------------------------
-contract Owned {
-    address public owner;
-    address public newOwner;
-
-    event OwnershipTransferred(address indexed _from, address indexed _to);
-
-    constructor() public {
-        owner = msg.sender;
-    }
-
-    modifier onlyOwner {
-        require(msg.sender == owner);
-        _;
-    }
-
-    function transferOwnership(address _newOwner) public onlyOwner {
-        newOwner = _newOwner;
-    }
-    function acceptOwnership() public {
-        require(msg.sender == newOwner);
-        emit OwnershipTransferred(owner, newOwner);
-        owner = newOwner;
-        newOwner = address(0);
-    }
-}
-
-
-// ----------------------------------------------------------------------------
-// ERC20 Token, with the addition of symbol, name and decimals and a
-// fixed supply
-// ----------------------------------------------------------------------------
-contract Token is ERC20Interface, Owned {
-    using SafeMath for uint;
-
-    string public symbol;
-    string public  name;
-    uint8 public decimals;
-    uint _totalSupply;
-
-    mapping(address => uint) balances;
-    mapping(address => mapping(address => uint)) allowed;
-
-
-    // ------------------------------------------------------------------------
-    // Constructor
-    // ------------------------------------------------------------------------
-    constructor(string _symbol, string _name, uint8 _decimals ) public payable{
-        symbol = _symbol;
-        name = _name;
-        decimals = _decimals;
-        _totalSupply = 1000000 * 10**uint(decimals);
-        balances[owner] = _totalSupply;
-    }
-
-
-    // ------------------------------------------------------------------------
-    // Total supply
-    // ------------------------------------------------------------------------
-    function totalSupply() public view returns (uint) {
-        return _totalSupply.sub(balances[address(0)]);
-    }
-
-
-    // ------------------------------------------------------------------------
-    // Get the token balance for account `tokenOwner`
-    // ------------------------------------------------------------------------
-    function balanceOf(address tokenOwner) public view returns (uint balance) {
-        return balances[tokenOwner];
-    }
-
-
-    // ------------------------------------------------------------------------
-    // Transfer the balance from token owner's account to `to` account
-    // - Owner's account must have sufficient balance to transfer
-    // - 0 value transfers are allowed
-    // ------------------------------------------------------------------------
-    function transfer(address to, uint tokens) public returns (bool success) {
-        balances[msg.sender] = balances[msg.sender].sub(tokens);
-        balances[to] = balances[to].add(tokens);
-        emit Transfer(msg.sender, to, tokens);
-        
-        return true;
-    }
-
-
-    // ------------------------------------------------------------------------
-    // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner's account
-    //
-    // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md
-    // recommends that there are no checks for the approval double-spend attack
-    // as this should be implemented in user interfaces 
-    // ------------------------------------------------------------------------
-    function approve(address spender, uint tokens) public returns (bool success) {
-        allowed[msg.sender][spender] = tokens;
-        emit Approval(msg.sender, spender, tokens);
-        return true;
-    }
-
-
-    // ------------------------------------------------------------------------
-    // Transfer `tokens` from the `from` account to the `to` account
-    // 
-    // The calling account must already have sufficient tokens approve(...)-d
-    // for spending from the `from` account and
-    // - From account must have sufficient balance to transfer
-    // - Spender must have sufficient allowance to transfer
-    // - 0 value transfers are allowed
-    // ------------------------------------------------------------------------
-    function transferFrom(address from, address to, uint value) public  returns (bool success){
-        require(value <= balanceOf(from));
-        balances[from] = balanceOf(from) - value;
-        balances[to] = balanceOf(to) + value;
-        emit Transfer(from, to, value);
-        return true;
-    }
-
-
-    // ------------------------------------------------------------------------
-    // Returns the amount of tokens approved by the owner that can be
-    // transferred to the spender's account
-    // ------------------------------------------------------------------------
-    function allowance(address tokenOwner, address spender) public view returns (uint remaining) {
-        return allowed[tokenOwner][spender];
-    }
-
-
-    // ------------------------------------------------------------------------
-    // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner's account. The `spender` contract function
-    // `receiveApproval(...)` is then executed
-    // ------------------------------------------------------------------------
-    function approveAndCall(address spender, uint tokens, bytes data) public returns (bool success) {
-        allowed[msg.sender][spender] = tokens;
-        emit Approval(msg.sender, spender, tokens);
-        ApproveAndCallFallBack(spender).receiveApproval(msg.sender, tokens, this, data);
-        return true;
-    }
-
-
-    // ------------------------------------------------------------------------
-    // Don't accept ETH
-    // ------------------------------------------------------------------------
-    function () public payable {
-        revert();
-    }
-
-
-    // ------------------------------------------------------------------------
-    // Owner can transfer out any accidentally sent ERC20 tokens
-    // ------------------------------------------------------------------------
-    function transferAnyERC20Token(address tokenAddress, uint tokens) public onlyOwner returns (bool success) {
-        return ERC20Interface(tokenAddress).transfer(owner, tokens);
-    }
-}
-
 
 contract MarketMaker
 {
@@ -228,61 +18,57 @@ contract MarketMaker
     
     event exchange(address indexed from, uint inputToken,uint outputToken, string fromToken, string toToken);
     
-    constructor () public {
-        KHAN = new Token ("KHAN", "KHAN Token", 18);
-        Token khan = Token(KHAN);
-        khan.transferFrom( address(this), 0x2ec5973e8847099e0234a1c567997d8fcdfe545c, ((1000000 * 10**uint(18)) - (100000 * 10**uint(18))));
-        
-        
-        GW = new Token ("GW", "Good Will", 18);
-        Token gw = Token(GW);
-        gw.transferFrom( address(this), 0x2ec5973e8847099e0234a1c567997d8fcdfe545c,((1000000 * 10**uint(18)) - (200000 * 10**uint(18))));
-
+    // KHAN; GW
+    //"0xfAB9D5b3504Fa717cB87A61534240503b60b0F92","0x27F5BB4edEeAD3854A89e9fe6ac2467A1aB5cbD4"
+    constructor (address token1, address token2) public {
+        KHAN = token1;  //0xfAB9D5b3504Fa717cB87A61534240503b60b0F92;
+        GW = token2;   //0x27F5BB4edEeAD3854A89e9fe6ac2467A1aB5cbD4;
     }
     
     function exchangeKHANtoGW( uint khanAmount ) public {
         
-        Token gw = Token(GW);
+        if( khanAmount > 50000000000000000000) {
+            revert();
+        }
         
-        Token khan = Token(KHAN);
-        
-        uint gwToTransfer = khanAmount * gw.balanceOf(address(this)) / khan.balanceOf(address(this));
-        
-        khan.transferFrom(  msg.sender, address(this),  khanAmount );
-        
-        gw.transferFrom( address(this), msg.sender, gwToTransfer );
+        uint gwToTransfer = khanAmount * getGWAmount() / getKHANAmount();
 
-        emit exchange(msg.sender, khanAmount, gwToTransfer, "KHAN", "GW" ); 
+        ERC20(KHAN).approve(address(this), khanAmount );
+        
+        ERC20(KHAN).transferFrom(msg.sender, address(this), khanAmount);
+        
+        ERC20(GW).transfer(msg.sender, gwToTransfer);
+        
+        emit exchange( msg.sender, khanAmount, gwToTransfer, "KHAN", "GW" );
+
     }
-
-    function exchangeGWtoKHAN( uint gwAmount ) public {
+    
+    function exchangeGWToKHAN( uint gwAmount ) public {
         
+        if( gwAmount > 50000000000000000000) {
+            revert();
+        }
         
-        Token gw = Token(GW);
+        uint khanToTransfer = gwAmount * getKHANAmount() / getGWAmount();
         
-        Token khan = Token(KHAN);
+        ERC20(GW).approve(address(this), gwAmount );
         
-        uint khanToTransfer = gwAmount * khan.balanceOf(address(this)) / gw.balanceOf(address(this)); 
+        ERC20(GW).transferFrom(msg.sender, address(this), gwAmount);
         
-        gw.transferFrom(  msg.sender,address(this),  gwAmount );
+        ERC20(KHAN).transfer(msg.sender, khanToTransfer);
         
-        khan.transferFrom( address(this), msg.sender, khanToTransfer );
-
-        emit exchange(msg.sender, gwAmount, khanToTransfer, "GW", "KHAN" );
+        emit exchange( msg.sender, gwAmount, khanToTransfer, "GW", "KHAN" );
     }
     
     function getMarketMakerAddress () public view returns   (address){
-        
         return address(this);
-        
     }
     
     function getGWAmount() public view returns (uint) {
-        Token gw = Token(GW);
-        return gw.balanceOf(address(this)) ;
+        return  ERC20(GW).balanceOf(address(this)) ;
     }
+   
     function getKHANAmount() public view returns (uint) {
-        Token khan = Token(KHAN);
-        return khan.balanceOf(address(this));
+        return  ERC20(KHAN).balanceOf(address(this)) ;
     }
 }
