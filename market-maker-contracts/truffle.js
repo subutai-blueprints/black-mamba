@@ -9,19 +9,19 @@ module.exports = {
   },
   networks: {
     test: {
-      host: "192.168.88.66",
-      port: 8501,
-      gasPrice: 1000000000,
-      gas: 4700000,
-      from: "0x65d601df30e19eeaae27355326fd2b98b4c007ea",
-      network_id: '1515'
-    },
-    production: {
-      host: "192.168.8.101",
+      host: "127.0.0.1",
       port: 8545,
       gasPrice: 1000000000,
       gas: 4700000,
-      from: "0xdbc9fe56be4ae71b43872a3a8325d463748d6df7",
+      from: "0x6e06d8ff6d77c2b0c7b73320da33f1658fe9b058",
+      network_id: '*'
+    },
+    production: {
+      host: "192.168.8.102",
+      port: 8501,
+      gasPrice: 1000000000,
+      gas: 4700000,
+      from: "0x1e255de2294c0d8ed61f621213b33ab5d8bf7d5c",
       network_id: '1515'
     },
     development: {
