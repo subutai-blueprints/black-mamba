@@ -37,11 +37,11 @@ contract MarketMaker
         uint gwToTransfer = getGWToTransfer( khanAmount );
 
         //transfer khan token from khan seller address to market maker address
-        ERC20(KHAN).approve( address(this), khanAmount );
-        ERC20(KHAN).transferFrom( msg.sender, address(this), khanAmount );
+        ERC20(khanAddress).approve( address(this), khanAmount );
+        ERC20(khanAddress).transferFrom( msg.sender, address(this), khanAmount );
         
         //transfer GW from market maker address to khan seller address
-        ERC20(GW).transfer(msg.sender, gwToTransfer);
+        ERC20(gwAddress).transfer(msg.sender, gwToTransfer);
         
         //call event to log
         emit exchange( msg.sender, khanAmount, gwToTransfer, "KHAN", "GW" );
@@ -55,16 +55,16 @@ contract MarketMaker
     // @gwAmount amount of gw tokens in wei
     function exchangeGWToKHAN( uint gwAmount ) public {
         
-        require( khanAmount < 50000000000000000000 );
+        require( gwAmount < 50000000000000000000 );
         
         uint khanToTransfer = getKhanToTransfer(gwAmount );
         
         //transfer GW token from GW seller address to market maker address
-        ERC20(GW).approve(address(this), gwAmount );
-        ERC20(GW).transferFrom(msg.sender, address(this), gwAmount);
+        ERC20(gwAddress).approve(address(this), gwAmount );
+        ERC20(gwAddress).transferFrom(msg.sender, address(this), gwAmount);
         
         //transfer KHAN from market maker address to GW seller address
-        ERC20(KHAN).transfer(msg.sender, khanToTransfer);
+        ERC20(khanAddress).transfer(msg.sender, khanToTransfer);
         
         //call event to log
         emit exchange( msg.sender, gwAmount, khanToTransfer, "GW", "KHAN" );
@@ -81,11 +81,11 @@ contract MarketMaker
     }
     
     function getGWAmount() public view returns (uint) {
-        return  ERC20(GW).balanceOf(address(this)) ;
+        return  ERC20(gwAddress).balanceOf(address(this)) ;
     }
    
     function getKHANAmount() public view returns (uint) {
-        return  ERC20(KHAN).balanceOf(address(this)) ;
+        return  ERC20(khanAddress).balanceOf(address(this)) ;
     }
     // END helper methods 
 }

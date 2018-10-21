@@ -95,7 +95,7 @@ contract Owned {
 // ERC20 Token, with the addition of symbol, name and decimals and a
 // fixed supply
 // ----------------------------------------------------------------------------
-contract Token is ERC20Interface, Owned {
+contract ERC20KhanToken is ERC20Interface, Owned {
     using SafeMath for uint;
 
     string public symbol;
@@ -110,10 +110,10 @@ contract Token is ERC20Interface, Owned {
     // ------------------------------------------------------------------------
     // Constructor
     // ------------------------------------------------------------------------
-    constructor(string _symbol, string _name, uint8 _decimals ) public payable{
-        symbol = _symbol;
-        name = _name;
-        decimals = _decimals;
+    constructor() public payable {
+        symbol = "KHAN";
+        name = "KHAN Token";
+        decimals = 18;
         _totalSupply = 1000000 * 10**uint(decimals);
         balances[owner] = _totalSupply;
     }

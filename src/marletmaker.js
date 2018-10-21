@@ -1,4 +1,14 @@
 import  web3 from './web3';
+// var fs = require("../build/contracts/MarketMaker.json");
+
+// console.log(fs);
+
+// const contract = JSON.parse(fs.readFileSync('../build/contracts/MarketMaker.json', 'utf8'));
+
+// const address = fs.readFileSync('../marketmakeraddress', 'utf8')
+
+// const abi=JSON.stringify(contract.abi);
+
 
 const address = '0xeaeba1aad76a1c71a26e123a5627cdc3d9ec5c89';
 
