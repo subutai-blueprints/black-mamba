@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
 import './App.css';
 import web3 from './web3';
-import marketMaker from './marletmaker';
+import marketMaker from './marketmaker';
 import { alert, buttons, jumbotron } from 'bootstrap-css';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import '../node_modules/react-bootstrap-table/dist/react-bootstrap-table-all.min.css';
-import addressMM  from './marketmakeraddress';
 
 
 const products = [];
@@ -39,8 +38,6 @@ class App extends Component {
 
 
   componentDidMount= async (event) => {
-
-    console.log(addressMM);
     
     await marketMaker.getPastEvents(
       'exchange',
