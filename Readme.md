@@ -44,6 +44,13 @@ truffle migrate --network development  --reset
 ```
 
 ### Run tests
+
+1) Compile contracts with the command
+```
+truffle compile
+```
+
+2) Run tests
 ```
 npm run test
 ```
