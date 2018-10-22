@@ -1,5 +1,5 @@
 const { readFileSync } = require('fs')
-
+var config = require('./config.json');
 module.exports = {
  solc: {
     optimizer: {
@@ -17,12 +17,12 @@ module.exports = {
       network_id: '*'
     },
     production: {
-      host: "192.168.8.102",
-      port: 8501,
+      host: config.host,
+      port: config.port,
       gasPrice: 1000000000,
       gas: 4700000,
-      from: "0x1e255de2294c0d8ed61f621213b33ab5d8bf7d5c",
-      network_id: '1515'
+      from: config.account,
+      network_id: config.network_id
     },
     development: {
       host: "127.0.0.1",

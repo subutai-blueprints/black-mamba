@@ -67,4 +67,3 @@ truffle migrate --network production  --reset
 ```
 npm run start
 ```
-
