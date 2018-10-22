@@ -2,6 +2,12 @@
 - hosts: all
   remote_user: root
   tasks:
+  
+    - name: Upgrade debian
+      apt:
+        update_cache: true
+        upgrade: true
+        
     - name: Install required debs
       apt:
         name: "{{ item }}"
