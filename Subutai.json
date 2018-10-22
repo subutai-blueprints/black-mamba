@@ -1,0 +1,77 @@
+{
+    "name": "${environmentName}",
+    "description": "Black mamba",
+    "version": "1.0.0",
+    "author": "https://github.com/absidish",
+    "containers": [
+        {
+            "hostname": "${containerName}",
+            "template": "debian-stretch",
+            "peer-criteria": "PEER-GROUP",
+            "size": "${containerSize}",
+            "port-mapping": [
+                {
+                    "protocol": "http",
+                    "domain": "${domainName}",
+                    "internal-port": "3000",
+                    "external-port": "80"
+                }
+            ]
+        }
+    ],
+    "peer-criteria": [
+        {
+            "name": "PEER-GROUP"
+        }
+    ],
+    "ansible-configuration": {
+        "source-url": "https://github.com/subutai-blueprints/black-mamba/archive/dev.zip",
+        "ansible-playbook": "install-tools.yml",
+        "extra-vars": [
+            {
+                "key": "message",
+                "value": "${message}"
+            }
+        ],
+        "groups": [
+            {
+                "name": "bm",
+                "hostnames": [
+                    "${containerName}"
+                ]
+            }
+        ]
+    },
+    "user-variables": {
+        "environmentName": {
+            "description": "Enter the environment name",
+            "type": "string",
+            "default": "wp",
+            "validation": "[a-zA-Z0-9]+"
+        },
+        "domainName": {
+            "description": "Enter the application domain name",
+            "type": "domain",
+            "default": "change.the.domain",
+            "validation": "[a-zA-Z0-9]+"
+        },
+        "webContainerName": {
+            "description": "Enter the container's hostname",
+            "type": "string",
+            "default": "wp",
+            "validation": "[a-zA-Z0-9]+"
+        },
+        "containerSize": {
+            "description": "Container Size",
+            "type": "enum",
+            "default": "TINY",
+            "validation": "TINY,SMALL,MEDIUM,LARGE,HUGE"
+        },
+        "message": {
+            "description": "Enter the message",
+            "type": "string",
+            "default": "message",
+            "validation": "[a-zA-Z0-9]+"
+        }
+    }
+}
