@@ -13,15 +13,21 @@
         - build-essential
         - git
 
-    - name: Unarchive a file that is already on the remote machine
+    - name: Unarchive project
       unarchive:
         src: /root/download.zip
-        dest: /tmp
+        dest: /root/
         remote_src: no
+
+    - name: Ansible register variable basic example
+      shell: "ls"
+      args:
+       chdir: "/root"
+      register: dirs
 
     - name: Disable dpkg fsync
       shell: echo force-unsafe-io > /etc/dpkg/dpkg.cfg.d/unsafe-io
-      args: 
+      args:
         creates: /etc/dpkg/dpkg.cfg.d/unsafe-io
 
     - name: Install dirmngr
@@ -64,6 +70,9 @@
       apt:
         name: "{{ item }}"
         state: present
-      with_items: 
+      with_items:
         - nodejs
 
+    #Install npm packages
+    - name: Install npm packages
+      npm: path=/root/dirs.stdout_lines[0] executable=/usr/bin/npm
