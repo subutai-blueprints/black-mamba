@@ -73,6 +73,23 @@
       with_items:
         - nodejs
 
-    #Install npm packages
     - name: Install npm packages
-      npm: path=/root/dirs.stdout_lines[0] executable=/usr/bin/npm
+      npm: path=/root/{{dirs.stdout_lines[0]}}
+
+
+    - name: Install bootnode service
+      template:
+        src: config.json.j2
+        dest: /root/{{dirs.stdout_lines[0]}}
+
+    - name: Go to the folder and execute command
+      command: chdir=/root/{{dirs.stdout_lines[0]}} node unlock.js
+
+    - name: truffle migrate
+      command: ls
+      args:
+        chdir: /root/{{dirs.stdout_lines[0]}}
+
+    - name: run app
+      shell: bash /root/{{dirs.stdout_lines[0]}}/run.sh {{dirs.stdout_lines[0]}}
+      sudo_user: root
