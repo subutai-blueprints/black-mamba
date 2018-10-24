@@ -2,4 +2,4 @@
 
 cd /root/$1
 
-npm run start
+npm run start &
