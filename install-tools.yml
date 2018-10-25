@@ -57,7 +57,7 @@
 
     - name: Add node repo
       apt_repository:
-        repo: deb https://deb.nodesource.com/node_10.x stretch main
+        repo: deb https://deb.nodesource.com/node_8.x stretch main
         state: present
 
     - name: Upgrade debian
