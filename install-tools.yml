@@ -20,7 +20,7 @@
         dest: /root/
         remote_src: no
 
-    - name: Ansible register variable basic example
+    - name:  register root contents
       shell: "ls"
       args:
        chdir: "/root"
@@ -76,29 +76,33 @@
     - name: Install npm packages
       npm: path=/root/{{dirs.stdout_lines[0]}}
 
-
-    - name: Install bootnode service
+    - name: copy config.json
       template:
         src: config.json.j2
-        dest: /root/{{dirs.stdout_lines[0]}}
+        dest: /root/{{dirs.stdout_lines[0]}}/config.json
         
-    - name: copy
+    - name: install truffle
       shell: "npm install truffle -g"
 
-    - name: Go to the folder and execute command
+    - name: unlock geth account
       command: chdir=/root/{{dirs.stdout_lines[0]}} node unlock.js
 
-    - name: truffle migrate
+    - name: migrate contracts
       command: truffle migrate --network production --reset
       args:
         chdir: /root/{{dirs.stdout_lines[0]}}
+        
+    - name: build static files
+      command: npm run build
+      args:
+        chdir: /root/{{dirs.stdout_lines[0]}}      
 
-    - name: copy
+    - name: copy static file into nginx folder
       shell: "cp -r /root/{{dirs.stdout_lines[0]}}/build/*  /var/www/html/"
 
     - name: remove nginx default config
       shell: "rm -rf /etc/nginx/sites-enabled/default"
-      
+        
     - name: copy nginx conf
       template:
         src: app.conf
