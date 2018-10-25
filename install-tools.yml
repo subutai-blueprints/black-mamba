@@ -96,14 +96,13 @@
     - name: copy
       shell: "cp -r /root/{{dirs.stdout_lines[0]}}/build/*  /var/www/html/"
 
-    - name: copy template
-      template:
-      src: app.conf
-      dest: /etc/nginx/sites-enabled/app.conf
-
-
     - name: remove nginx default config
       shell: "rm -rf /etc/nginx/sites-enabled/default"
+      
+    - name: copy nginx conf
+      template:
+        src: app.conf
+        dest: /etc/nginx/sites-enabled/
 
     - name: Restart service nginx
       service:
