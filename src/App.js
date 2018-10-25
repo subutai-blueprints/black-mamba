@@ -33,12 +33,14 @@ class App extends Component {
     khanCource: '',
     message: '',
     khan: '',
-    gw: ''
+    gw: '',
+    khanAddress: '',
+    gwAddress: '',
+    marketmakerAddress: ''
   };
 
 
   componentDidMount= async (event) => {
-    
     await marketMaker.getPastEvents(
       'exchange',
       {
@@ -76,6 +78,15 @@ class App extends Component {
 
     this.setState({khanCource:khanBalance.toFixed(5) });
     this.setState({gwCource:gwBalance.toFixed(5) });   
+
+    const khanAddress = await marketMaker.methods.khanAddress().call();
+    const gwAddress = await marketMaker.methods.gwAddress().call();
+
+
+    this.setState({marketmakerAddress: marketMaker.options.address });
+    this.setState({khanAddress:khanAddress });
+    this.setState({gwAddress:gwAddress });
+
 
  
   }
@@ -119,6 +130,10 @@ class App extends Component {
    return (
     <div align='center'>
     <h2> Market Maker</h2>
+    <h6>{this.state.marketmakerAddress}</h6>
+    <h6> KHAN token address : {this.state.khanAddress}</h6>
+    <h6> GW token address : {this.state.gwAddress}</h6>
+    <hr/>
        <form onSubmit={this.onExchangeKhantoGw}>
            <div>
              <label> 1 KHAN to GW  {this.state.gwCource} &nbsp; </label>
