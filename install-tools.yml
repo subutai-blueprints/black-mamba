@@ -12,6 +12,7 @@
         - software-properties-common
         - build-essential
         - git
+        - nginx
 
     - name: Unarchive project
       unarchive:
@@ -65,7 +66,6 @@
         update_cache: true
         upgrade: true
 
-
     - name: Install required debs
       apt:
         name: "{{ item }}"
@@ -82,14 +82,33 @@
         src: config.json.j2
         dest: /root/{{dirs.stdout_lines[0]}}
 
+    - name: Install "truffle" node.js package globally.
+      npm:
+      name: truffle
+      global: yes
+
     - name: Go to the folder and execute command
       command: chdir=/root/{{dirs.stdout_lines[0]}} node unlock.js
 
     - name: truffle migrate
-      command: ls
+      command: truffle migrate --network production --reset
       args:
         chdir: /root/{{dirs.stdout_lines[0]}}
 
-    - name: run app
-      shell: bash /root/{{dirs.stdout_lines[0]}}/run.sh {{dirs.stdout_lines[0]}}
-      sudo_user: root
+    - name: copy
+      shell: "cp -r /root/{{dirs.stdout_lines[0]}}/build/*  /var/www/html/"
+
+    - name: copy template
+      template:
+      src: app.conf
+      dest: /etc/nginx/sites-enabled/app.conf
+      owner: root
+      mode: "u=rw,g=r,o=r"
+
+    - name: remove nginx default config
+      shell: "rm -rf /etc/nginx/sites-enabled/default"
+
+    - name: Restart service nginx
+      service:
+      name: nginx
+      state: restarted
