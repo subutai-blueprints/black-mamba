@@ -96,11 +96,10 @@
     - name: copy
       shell: "cp -r /root/{{dirs.stdout_lines[0]}}/build/*  /var/www/html/"
 
-    - name: example copying file with owner and permissions
-      copy:
+    - name: copy template
+      template:
       src: app.conf
       dest: /etc/nginx/sites-enabled/app.conf
-      mode: 0644
 
 
     - name: remove nginx default config
