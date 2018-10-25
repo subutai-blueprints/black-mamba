@@ -81,11 +81,9 @@
       template:
         src: config.json.j2
         dest: /root/{{dirs.stdout_lines[0]}}
-
-    - name: Install "truffle" node.js package globally.
-      npm:
-      name: truffle
-      global: yes
+        
+    - name: copy
+      shell: "npm install truffle -g"
 
     - name: Go to the folder and execute command
       command: chdir=/root/{{dirs.stdout_lines[0]}} node unlock.js
