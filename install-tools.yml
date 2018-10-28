@@ -1,0 +1,114 @@
+---
+- hosts: all
+  remote_user: root
+  tasks:
+    - name: Install required debs
+      apt:
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - unzip
+        - curl
+        - software-properties-common
+        - build-essential
+        - git
+        - nginx
+
+    - name: Unarchive project
+      unarchive:
+        src: /root/download.zip
+        dest: /root/
+        remote_src: no
+
+    - name:  register root contents
+      shell: "ls"
+      args:
+       chdir: "/root"
+      register: dirs
+
+    - name: Disable dpkg fsync
+      shell: echo force-unsafe-io > /etc/dpkg/dpkg.cfg.d/unsafe-io
+      args:
+        creates: /etc/dpkg/dpkg.cfg.d/unsafe-io
+
+    - name: Install dirmngr
+      apt:
+        name: dirmngr
+        state: present
+
+    - name: Install apt-transport-https
+      apt:
+        name: apt-transport-https
+        state: present
+
+    - name: Add ethereum repo key
+      apt_key:
+        id: 1C52189C923F6CA9
+        keyserver: keyserver.ubuntu.com
+
+    - name: Add node repo key
+      apt_key:
+        id: 1655A0AB68576280
+        keyserver: keyserver.ubuntu.com
+
+    - name: Add node repo
+      apt_repository:
+        repo: deb http://ppa.launchpad.net/ethereum/ethereum/ubuntu xenial main
+        state: present
+
+    - name: Add node repo
+      apt_repository:
+        repo: deb https://deb.nodesource.com/node_8.x stretch main
+        state: present
+
+    - name: Upgrade debian
+      apt:
+        update_cache: true
+        upgrade: true
+
+    - name: Install required debs
+      apt:
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - nodejs
+
+    - name: Install npm packages
+      npm: path=/root/{{dirs.stdout_lines[0]}}
+
+    - name: copy config.json
+      template:
+        src: config.json.j2
+        dest: /root/{{dirs.stdout_lines[0]}}/config.json
+        
+    - name: install truffle
+      shell: "npm install truffle -g"
+
+    - name: unlock geth account
+      command: chdir=/root/{{dirs.stdout_lines[0]}} node unlock.js
+
+    - name: migrate contracts
+      command: truffle migrate --network production --reset
+      args:
+        chdir: /root/{{dirs.stdout_lines[0]}}
+        
+    - name: build static files
+      command: npm run build
+      args:
+        chdir: /root/{{dirs.stdout_lines[0]}}      
+
+    - name: copy static file into nginx folder
+      shell: "cp -r /root/{{dirs.stdout_lines[0]}}/build/*  /var/www/html/"
+
+    - name: remove nginx default config
+      shell: "rm -rf /etc/nginx/sites-enabled/default"
+        
+    - name: copy nginx conf
+      template:
+        src: app.conf
+        dest: /etc/nginx/sites-enabled/
+
+    - name: Restart service nginx
+      service:
+      name: nginx
+      state: restarted

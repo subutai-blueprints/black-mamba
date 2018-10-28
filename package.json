@@ -4,18 +4,23 @@
   "private": true,
   "dependencies": {
     "bootstrap-css": "^4.0.0-alpha.5",
+    "fs": "0.0.1-security",
+    "ganache-cli": "^6.1.8",
+    "mocha": "^5.2.0",
+    "properties-reader": "0.0.16",
     "react": "^16.4.2",
     "react-bootstrap": "^0.32.4",
     "react-bootstrap-table": "^4.3.1",
     "react-dom": "^16.4.2",
     "react-scripts": "1.1.5",
     "react-table": "^6.8.6",
+    "truffle-export-abi": "^1.0.1",
     "web3": "^1.0.0-beta.35"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test --env=jsdom",
+    "test": "./node_modules/.bin/mocha --reporter spec",
     "eject": "react-scripts eject"
   }
 }

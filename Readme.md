@@ -31,4 +31,39 @@ This is a MATE based desktop container that Subutai users can remote desktop to
 for developing Solidity contracts and deploying them to the blockchain to be
 simulation tested for future proofing systems using Mamba and Julia.
 
+# Development
 
+### Install dependencies
+```
+npm install --save
+```
+
+### Deploy contracts to local blockchain
+```
+truffle migrate --network development  --reset
+```
+
+### Run tests
+
+1) Compile contracts with the command
+```
+truffle compile
+```
+
+2) Run tests
+```
+npm run test
+```
+
+## Requirements to run application
+1) Change `production` section in truffle.js
+
+2) Deploy contracts to testnet, with command:
+```
+truffle migrate --network production  --reset
+```
+3) Run application
+
+```
+npm run start
+```
