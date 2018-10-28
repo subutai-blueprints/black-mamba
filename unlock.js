@@ -8,8 +8,9 @@ async function start() {
     const account = web3.eth.accounts.privateKeyToAccount('0x' + privateKey);
     web3.eth.accounts.wallet.add(account);
 	web3.eth.defaultAccount = account.address;
-
-	await web3.eth.personal.unlockAccount(web3.eth.defaultAccount, config.private_key_pwd , 180)
+	await web3.eth.personal.importRawKey(privateKey, config.private_key_pwd);
+	
+	await web3.eth.personal.unlockAccount(web3.eth.defaultAccount, config.private_key_pwd , 360)
 	.then((response) => {
 		console.log(response);
 	}).catch((error) => {
